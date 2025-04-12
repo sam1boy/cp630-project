@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ranking & Linear Regression Test Page</title>
+    <script>
+        function submitForm(endpoint, formId) {
+            var score = document.getElementById(formId).querySelector("input[name='score']").value;
+            var actionUrl = endpoint.replace("{score}", score);
+            document.getElementById(formId).action = actionUrl;
+            document.getElementById(formId).submit();
+        }
+
+        function submitLRForm() {
+            var queryInstance = document.getElementById("lrQueryInstance").value;
+            var actionUrl = "/model/predict/" + queryInstance;
+            document.getElementById("lrForm").action = actionUrl;
+            document.getElementById("lrForm").submit();
+        }
+    </script>
+</head>
+<body>
+    <h1>Ranking & Linear Regression Test Page</h1>
+
+    <!-- Form to get grade for a given score -->
+    <form id="gradeForm" method="GET">
+        <label for="gradeScore">Enter Score:</label>
+        <input type="text" id="gradeScore" name="score">
+        <button type="button" onclick="submitForm('/grade/{score}', 'gradeForm')">Get Grade</button>
+    </form>
+
+    <!-- Form to get rank for a given score -->
+    <form id="rankForm" method="GET">
+        <label for="rankScore">Enter Score:</label>
+        <input type="text" id="rankScore" name="score">
+        <button type="button" onclick="submitForm('/rank/{score}', 'rankForm')">Get Rank</button>
+    </form>
+
+    <!-- Form to get both grade and rank for a given score -->
+    <form id="gradeRankForm" method="GET">
+        <label for="gradeRankScore">Enter Score:</label>
+        <input type="text" id="gradeRankScore" name="score">
+        <button type="button" onclick="submitForm('/grade-rank/{score}', 'gradeRankForm')">Get Grade and Rank</button>
+    </form>
+
+    <!-- Form for linear regression testing -->
+    <h2>Linear Regression Prediction Test</h2>
+    <form id="lrForm" method="GET">
+        <label for="lrQueryInstance">Enter Query Instance (comma-separated values):</label>
+        <input type="text" id="lrQueryInstance" name="queryInstance">
+        <button type="button" onclick="submitLRForm()">Predict</button>
+    </form>
+
+</body>
+</html>

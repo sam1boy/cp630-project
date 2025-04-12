@@ -1,0 +1,162 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --accent-color: #9b59b6;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --dark-color: #34495e;
+    --light-color: #ecf0f1;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+    padding-top: 20px;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.logo {
+    height: 60px;
+    margin-right: 15px;
+}
+
+h1 {
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+.card {
+    border-radius: 10px;
+    border: none;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    padding: 15px 20px;
+    border-bottom: none;
+}
+
+.card-header h3 {
+    font-size: 1.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.card-header h3 i {
+    margin-right: 10px;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--dark-color);
+}
+
+.prediction-box {
+    background-color: var(--light-color);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border-left: 5px solid var(--secondary-color);
+    margin: 20px 0;
+}
+
+#predictionResult {
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+.progress {
+    height: 25px;
+    border-radius: 5px;
+}
+
+.progress-bar {
+    font-weight: 500;
+}
+
+.additional-info {
+    background-color: rgba(46, 204, 113, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid var(--secondary-color);
+}
+
+.additional-info h5 {
+    color: var(--secondary-color);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.waiting-message {
+    padding: 40px 20px;
+    color: #777;
+}
+
+.waiting-message i {
+    color: var(--accent-color);
+}
+
+footer {
+    color: #777;
+    margin-top: 30px;
+}
+
+@media (max-width: 767px) {
+    .col-md-6 + .col-md-6 {
+        margin-top: 20px;
+    }
+}
+
+.treatment-box {
+    border-left: 4px solid #28a745;
+    background-color: #f8f9fa;
+}
+
+.treatment-info {
+    transition: all 0.3s ease;
+}
+
+.treatment-info.d-none {
+    opacity: 0;
+    height: 0;
+}
+
+.treatment-info:not(.d-none) {
+    opacity: 1;
+}
