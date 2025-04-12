@@ -12,7 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Submit form event handler
     predictionForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+		e.preventDefault();
+
+		// Hide treatment card when starting a new prediction
+		document.getElementById('treatmentCard').classList.add('d-none');
         
         // Show loading state
         waitingMessage.innerHTML = '<p><i class="fas fa-spinner fa-spin fa-3x mb-3"></i></p><p>Processing your request...</p>';
@@ -59,9 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     confidenceBar.classList.add('bg-danger');
                 }
                 
-                // Update explanation
                 explanationText.innerHTML = `The model predicts with ${confidence}% confidence that this cell line is of <strong>${data.prediction}</strong> cancer type based on the provided characteristics.`;
-            } else {
+            
+				fetchTreatmentInfo(data.prediction);
+	
+			} else {
                 // Show error
                 predictionResult.textContent = 'ERROR';
                 confidenceBar.style.width = '0%';
@@ -166,51 +171,76 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 	
 	function fetchTreatmentInfo(cancerType) {
-	    const treatmentInfoSection = document.querySelector('.treatment-info');
-	    const treatmentText = document.getElementById('treatmentText');
+	    // Don't show treatment info for unknown cancer types
+	    if (!cancerType || cancerType.toLowerCase().includes('unknown')) {
+	        console.log("Unknown cancer type - not displaying treatment info");
+	        document.getElementById('treatmentCard').classList.add('d-none');
+	        return;
+	    }
 	    
-	    // Show treatment section and loading message
-	    treatmentInfoSection.classList.remove('d-none');
+	    console.log("Fetching treatment info for: " + cancerType);
+	    const treatmentCard = document.getElementById('treatmentCard');
+	    const treatmentText = document.getElementById('treatmentText');
+	    const treatmentTitle = document.getElementById('treatmentTitle');
+	    
+	    // Show treatment card and set title
+	    treatmentCard.classList.remove('d-none');
+	    treatmentTitle.textContent = `Treatment Approaches for ${cancerType} Cancer`;
 	    treatmentText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading treatment information...';
 	    
-	    fetch('treatment-info?cancerType=' + encodeURIComponent(cancerType))
-        .then(response => response.json())
-        .then(data => {
-			if (data.success) {
-			    // Display prediction
-			    predictionResult.textContent = data.prediction;
-			    
-			    // Update confidence bar
-			    const confidence = Math.round(data.confidence);
-			    confidenceBar.style.width = confidence + '%';
-			    confidenceBar.setAttribute('aria-valuenow', confidence);
-			    confidenceBar.textContent = confidence + '%';
-			    
-			    // Set color based on confidence
-			    if (confidence >= 70) {
-			        confidenceBar.classList.remove('bg-warning', 'bg-danger');
-			        confidenceBar.classList.add('bg-success');
-			    } else if (confidence >= 40) {
-			        confidenceBar.classList.remove('bg-success', 'bg-danger');
-			        confidenceBar.classList.add('bg-warning');
-			    } else {
-			        confidenceBar.classList.remove('bg-success', 'bg-warning');
-			        confidenceBar.classList.add('bg-danger');
-			    }
-			    
-			    // Update explanation
-			    explanationText.innerHTML = `The model predicts with ${confidence}% confidence that this cell line is of <strong>${data.prediction}</strong> cancer type based on the provided characteristics.`;
-			    
-			    // NEW: Fetch and display treatment info
-			    fetchTreatmentInfo(data.prediction);
-			} else {
-                treatmentText.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> ' + 
-                                          'Could not retrieve treatment information: ' + data.error;
-            }
-        })
-        .catch(error => {
-            treatmentText.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> ' + 
-                                      'Error loading treatment information: ' + error.message;
-        });
+	    // Log the API URL for debugging
+	    const apiUrl = 'treatment-info?cancerType=' + encodeURIComponent(cancerType);
+	    console.log("Calling API endpoint: " + apiUrl);
+	    
+	    fetch(apiUrl)
+	        .then(response => {
+	            console.log("API Response status: " + response.status);
+	            if (!response.ok) {
+	                throw new Error('API returned status: ' + response.status);
+	            }
+	            return response.json();
+	        })
+	        .then(data => {
+	            console.log("API data received:", data);
+	            if (data.success) {
+	                // Check if we have treatment info
+	                if (data.treatmentInfo) {
+	                    treatmentText.innerHTML = data.treatmentInfo;
+	                    console.log("Treatment info displayed successfully");
+	                } else {
+	                    // If no treatment info was returned (for unknown types)
+	                    treatmentCard.classList.add('d-none');
+	                }
+	            } else {
+	                treatmentText.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> ' + 
+	                                          'Could not retrieve treatment information: ' + data.error;
+	                console.error("API error: " + data.error);
+	            }
+	        })
+	        .catch(error => {
+	            console.error("Error fetching treatment info: " + error);
+	            treatmentText.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> ' + 
+	                                      'Error loading treatment information: ' + error.message;
+	            // Fall back to basic information if API fails
+	            showFallbackTreatmentInfo(cancerType);
+	        });
+	}
+	
+	function showFallbackTreatmentInfo(cancerType) {
+	    const treatmentText = document.getElementById('treatmentText');
+	    
+	    switch(cancerType) {
+	        case "BRCA":
+	            treatmentText.innerHTML = "<p>Breast cancer treatments typically include surgery, radiation therapy, chemotherapy, hormone therapy, and targeted therapies. Recent advances include immunotherapies and personalized medicine approaches.</p>";
+	            break;
+	        case "LUAD":
+	        case "LUSC":
+	            treatmentText.innerHTML = "<p>Lung cancer treatments may include surgery, chemotherapy, radiation therapy, targeted drug therapy, and immunotherapy. Treatment depends on cancer type, stage, and patient health status.</p>";
+	            break;
+	        default:
+	            treatmentText.innerHTML = "<p>Treatment typically involves a combination of surgery, radiation therapy, chemotherapy, targeted therapy, or immunotherapy, depending on cancer stage and patient factors.</p>";
+	    }
+	    
+	    treatmentText.innerHTML += "<p><small class='text-muted'>(Basic information provided - API currently unavailable)</small></p>";
 	}
 });

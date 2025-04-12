@@ -365,6 +365,8 @@ public class ModelTrainingApp {
             
             double accuracy = evaluateModel(model, testData, modelName);
             
+            System.out.println(modelName + " accuracy: " + accuracy);
+            
             if (accuracy > bestAccuracy) {
                 bestAccuracy = accuracy;
                 bestModelName = modelName;

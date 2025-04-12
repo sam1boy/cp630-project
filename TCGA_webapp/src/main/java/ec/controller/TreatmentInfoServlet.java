@@ -14,42 +14,61 @@ import java.io.IOException;
 @WebServlet("/treatment-info")
 public class TreatmentInfoServlet extends HttpServlet {
     
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        String cancerType = request.getParameter("cancerType");
-        response.setContentType("application/json");
-        
-        if (cancerType == null || cancerType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
-                .add("success", false)
-                .add("error", "Cancer type parameter is required");
-            
-            response.getWriter().write(jsonBuilder.build().toString());
-            return;
-        }
-        
-        try {
-            String treatmentInfo = GeminiService.getCancerTreatmentInfo(cancerType);
-            
-            JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
-                .add("success", true)
-                .add("cancerType", cancerType)
-                .add("treatmentInfo", treatmentInfo);
-            
-            response.getWriter().write(jsonBuilder.build().toString());
-            
-        } catch (Exception e) {
-            getServletContext().log("Error retrieving treatment info: " + e.getMessage(), e);
-            
-            JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
-                .add("success", false)
-                .add("error", "Failed to retrieve treatment information: " + e.getMessage());
-            
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(jsonBuilder.build().toString());
-        }
-    }
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+	        throws ServletException, IOException {
+	    
+	    String cancerType = request.getParameter("cancerType");
+	    getServletContext().log("TreatmentInfoServlet called with cancerType: " + cancerType);
+	    
+	    response.setContentType("application/json");
+	    
+	    if (cancerType == null || cancerType.isEmpty() || cancerType.equalsIgnoreCase("unknown")) {
+	        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+	            .add("success", true)
+	            .add("cancerType", cancerType == null ? "unknown" : cancerType)
+	            .add("treatmentInfo", (String)null);
+	        
+	        response.getWriter().write(jsonBuilder.build().toString());
+	        return;
+	    }
+	    
+	    try {
+	        getServletContext().log("Calling GeminiService.getCancerTreatmentInfo...");
+	        String treatmentInfo = GeminiService.getCancerTreatmentInfo(cancerType);
+	        
+	        if (treatmentInfo != null) {
+	            getServletContext().log("Treatment info received, length: " + treatmentInfo.length());
+	        } else {
+	            getServletContext().log("No treatment info returned for this cancer type");
+	        }
+	        
+	        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+	            .add("success", true)
+	            .add("cancerType", cancerType);
+	        
+	        if (treatmentInfo != null) {
+	            jsonBuilder.add("treatmentInfo", treatmentInfo);
+	        } else {
+	            jsonBuilder.addNull("treatmentInfo");
+	        }
+	        
+	        response.getWriter().write(jsonBuilder.build().toString());
+	        
+	    } catch (Exception e) {
+	        getServletContext().log("Error retrieving treatment info: " + e.getMessage(), e);
+	        
+	        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder()
+	            .add("success", false)
+	            .add("error", "Failed to retrieve treatment information: " + e.getMessage());
+	        
+	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        response.getWriter().write(jsonBuilder.build().toString());
+	    }
+	}
 }

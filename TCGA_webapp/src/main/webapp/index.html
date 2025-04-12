@@ -141,18 +141,6 @@
                                 <div class="progress">
                                     <div id="confidenceBar" class="progress-bar progress-bar-striped progress-bar-animated" 
                                          role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                                    <div class="treatment-info mt-4 d-none">
-									    <h5 class="mb-3"><i class="fas fa-heartbeat"></i> Treatment Approaches</h5>
-									    <div class="treatment-box p-3 bg-light rounded">
-									        <p id="treatmentText">Loading treatment information...</p>
-									    </div>
-									    <div class="text-end mt-2">
-									        <small class="text-muted">
-									            Information provided by Gemini AI
-									            <i class="fas fa-robot ms-1"></i>
-									        </small>
-									    </div>
-									</div>
                                 </div>
                             </div>
                             
@@ -164,6 +152,24 @@
                     </div>
                 </div>
                 
+                <div class="card shadow mt-4 treatment-card d-none" id="treatmentCard">
+			        <div class="card-header bg-primary text-white">
+			            <h3><i class="fas fa-heartbeat"></i> Treatment Information</h3>
+			        </div>
+			        <div class="card-body">
+			            <h5 class="mb-3" id="treatmentTitle">Treatment Approaches</h5>
+			            <div class="treatment-box p-3 bg-light rounded">
+			                <p id="treatmentText">Loading treatment information...</p>
+			            </div>
+			            <div class="text-end mt-2">
+			                <small class="text-muted">
+			                    Information provided by Gemini AI
+			                    <i class="fas fa-robot ms-1"></i>
+			                </small>
+			            </div>
+			        </div>
+			    </div>
+			    
                 <div class="card shadow mt-4">
                     <div class="card-header bg-info text-white">
                         <h3><i class="fas fa-info-circle"></i> About This Tool</h3>
@@ -171,7 +177,7 @@
                     <div class="card-body">
                         <p>This prediction tool uses machine learning to identify cancer types based on cell line characteristics. Our model was trained on the Cell Lines dataset and achieves high accuracy in predictions.</p>
                         <p>The tool uses key genomic, tissue, and cellular features to predict cancer types according to TCGA classification.</p>
-                        <p><small>Last updated: 2025-04-12 04:08:02 | User: sam1boy</small></p>
+                        <p><small>Last updated: 2025-04-12</small></p>
                     </div>
                 </div>
             </div>

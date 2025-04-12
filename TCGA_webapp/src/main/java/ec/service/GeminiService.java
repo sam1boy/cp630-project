@@ -12,9 +12,14 @@ import java.nio.charset.StandardCharsets;
 
 public class GeminiService {
 
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent";
     
     public static String getCancerTreatmentInfo(String cancerType) throws IOException {
+        // Check if cancer type is unknown and return early
+        if (cancerType == null || cancerType.equalsIgnoreCase("unknown")) {
+            return null; // Return null to indicate we shouldn't show treatment info
+        }
+        
         String apiKey = ApiConfig.getGeminiApiKey();
         
         if (apiKey == null || apiKey.isEmpty()) {
@@ -22,7 +27,7 @@ public class GeminiService {
         }
         
         String prompt = "Provide a concise paragraph (maximum 100 words) about the current treatment approaches for " + 
-                        cancerType + " cancer. Include standard treatments and any recent advances. Format as an HTML paragraph.";
+                        cancerType + " cancer. Do not include any markdown formatting or code blocks in your response.";
         
         String requestBody = Json.createObjectBuilder()
                 .add("contents", Json.createArrayBuilder()
@@ -70,12 +75,14 @@ public class GeminiService {
             }
         }
         
-        return extractTextFromResponse(response.toString());
+        String extractedText = extractTextFromResponse(response.toString());
+        return cleanResponseText(extractedText);
     }
     
     private static String extractTextFromResponse(String responseBody) {
         try (JsonReader jsonReader = Json.createReader(new StringReader(responseBody))) {
             JsonObject jsonObject = jsonReader.readObject();
+            
             return jsonObject
                     .getJsonArray("candidates")
                     .getJsonObject(0)
@@ -85,7 +92,21 @@ public class GeminiService {
                     .getString("text");
         } catch (Exception e) {
             System.err.println("Error parsing Gemini API response: " + e.getMessage());
+            e.printStackTrace();
             return "Unable to parse treatment information.";
         }
+    }
+    
+    // Clean the response text by removing markdown code blocks
+    private static String cleanResponseText(String text) {
+        if (text == null) return null;
+        
+        // Remove markdown code block indicators
+        String cleaned = text.replaceAll("```\\w*", "").replaceAll("```", "");
+        
+        // Remove leading/trailing whitespace
+        cleaned = cleaned.trim();
+        
+        return cleaned;
     }
 }

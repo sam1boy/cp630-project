@@ -160,3 +160,26 @@ footer {
 .treatment-info:not(.d-none) {
     opacity: 1;
 }
+
+.treatment-card {
+    transition: all 0.3s ease;
+}
+
+.treatment-box {
+    border-left: 4px solid #0d6efd; /* Blue border (matches card header) */
+    background-color: #f8f9fa;
+}
+
+#treatmentTitle {
+    color: #0d6efd;
+}
+
+/* Animation for treatment card */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#treatmentCard:not(.d-none) {
+  animation: fadeIn 0.5s ease-out forwards;
+}
